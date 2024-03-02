@@ -1,26 +1,86 @@
 const playBtn = document.getElementById("play");
 const board = document.querySelector(".unclickable");
 const levelElement = document.getElementById("level");
+const highScoreElement = document.getElementById("high-score");
 const tiles = document.querySelectorAll("[data-tile]");
 const greenSound = new Audio("../sounds/green.mp3");
 const redSound = new Audio("../sounds/red.mp3");
 const blueSound = new Audio("../sounds/blue.mp3");
 const yellowSound = new Audio("../sounds/yellow.mp3");
+const wrongSound = new Audio("../sounds/wrong.mp3");
+const gameOverSound = new Audio("../sounds/game-over.wav");
+const gameWinSound = new Audio("../sounds/game-win.wav");
 
 const colors = ["green", "red", "blue", "yellow"];
 let pattern = [];
+let playerPattern = [];
 let newPatternColor;
 let level = 0;
+let countPlayerTiles;
+let maxRounds = 12;
+let highestScore = 0;
 
 function restartGame() {
+    highScoreElement.innerHTML = highestScore;
     pattern = [];
     playerPattern = [];
     level = 0;
     levelElement.innerHTML = level;
 }
 
+function gameOver() {
+    wrongSound.play();
+    setTimeout(function () {
+        gameOverSound.play();
+        board.classList.add("unclickable");
+        if (highestScore < pattern.length)
+            highestScore = pattern.length - 1;
+        restartGame();
+    }, 500);
+}
+
+function gameWin() {
+    setTimeout(function () {
+        gameWinSound.play();
+        highestScore = maxRounds;
+        board.classList.add("unclickable");
+        restartGame();
+    }, 500);
+}
+
+function checkPlayerPattern() {
+    let correctPattern = true;
+    console.log(playerPattern + "   " + pattern);
+    for (let i = 0; i < playerPattern.length; i++) {
+        console.log(i + "  " + playerPattern[i] + "   " + pattern[i]);
+        if (playerPattern[i] != pattern[i]) {
+            correctPattern = false;
+            break;
+        }
+    }
+    if (correctPattern && playerPattern.length == pattern.length) {
+        if (pattern.length == maxRounds)
+            gameWin();
+        else
+            gameRound();
+        return true;
+    }
+    else if (correctPattern && playerPattern.length != pattern.length)
+        return true;
+    else {
+        gameOver();
+        return false;
+    }
+}
+
 for (let i = 0; i < tiles.length; i++) {
     tiles[i].addEventListener("click", function () {
+        const clickedTile = tiles[i].getAttribute("data-tile");
+        playerPattern.push(clickedTile);
+        countPlayerTiles++;
+        let correctStep = checkPlayerPattern();
+        if (correctStep)
+            playTileSound(clickedTile);
     })
 }
 
@@ -77,6 +137,7 @@ function gameRound() {
     if(!board.classList.toggle("unclickable"))
         board.classList.add("unclickable");
     level++;
+    countPlayerTiles = 0;
     playerPattern = [];
     levelElement.innerHTML = level;
     newPatternColor = colors[Math.floor(Math.random() * colors.length)];
