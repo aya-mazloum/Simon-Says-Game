@@ -73,17 +73,6 @@ function checkPlayerPattern() {
     }
 }
 
-for (let i = 0; i < tiles.length; i++) {
-    tiles[i].addEventListener("click", function () {
-        const clickedTile = tiles[i].getAttribute("data-tile");
-        playerPattern.push(clickedTile);
-        countPlayerTiles++;
-        let correctStep = checkPlayerPattern();
-        if (correctStep)
-            playTileSound(clickedTile);
-    })
-}
-
 function playTileSound(tile) {
     if (tile == "green")
         greenSound.play();
@@ -146,6 +135,17 @@ function gameRound() {
     setTimeout(function () {
         board.classList.remove("unclickable");
     }, 1000 * pattern.length);
+}
+
+for (let i = 0; i < tiles.length; i++) {
+    tiles[i].addEventListener("click", function () {
+        const clickedTile = tiles[i].getAttribute("data-tile");
+        playerPattern.push(clickedTile);
+        countPlayerTiles++;
+        let correctStep = checkPlayerPattern();
+        if (correctStep)
+            playTileSound(clickedTile);
+    })
 }
 
 playBtn.onclick = function () {
