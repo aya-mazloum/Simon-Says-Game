@@ -50,7 +50,6 @@ function gameWin() {
 
 function checkPlayerPattern() {
     let correctPattern = true;
-    console.log(playerPattern + "   " + pattern);
     for (let i = 0; i < playerPattern.length; i++) {
         console.log(i + "  " + playerPattern[i] + "   " + pattern[i]);
         if (playerPattern[i] != pattern[i]) {
@@ -123,15 +122,19 @@ function playRoundTiles(i) {
 }
 
 function gameRound() {
-    if(!board.classList.toggle("unclickable"))
-        board.classList.add("unclickable");
+    board.classList.toggle("unclickable")
+
     level++;
+    levelElement.innerHTML = level;
+
     countPlayerTiles = 0;
     playerPattern = [];
-    levelElement.innerHTML = level;
+
     newPatternColor = colors[Math.floor(Math.random() * colors.length)];
     pattern.push(newPatternColor);
+
     playRoundTiles(0);
+
     setTimeout(function () {
         board.classList.remove("unclickable");
     }, 1000 * pattern.length);
@@ -141,7 +144,9 @@ for (let i = 0; i < tiles.length; i++) {
     tiles[i].addEventListener("click", function () {
         const clickedTile = tiles[i].getAttribute("data-tile");
         playerPattern.push(clickedTile);
+
         countPlayerTiles++;
+
         let correctStep = checkPlayerPattern();
         if (correctStep)
             playTileSound(clickedTile);
